@@ -7,7 +7,7 @@ const Banner = () => {
     })
 
     return (
-        <div className="flex justify-between mx-auto w-full max-w-7xl px-4 items-center border">
+        <div className="flex justify-between px-4 items-center border">
             {/* left text and banner heading */}
             <div>
                 <h2>{date}</h2>
@@ -19,7 +19,7 @@ const Banner = () => {
 
             {/* Right banner Logo */}
             <div>
-                <Image width={300} height={300} src={'/bazar-hero.png'} />
+                <Image alt="" width={300} height={300} src={'/bazar-hero.png'} />
             </div>
         </div>
     );
