@@ -45,7 +45,7 @@ function SignInForm() {
     <form className="auth-card" onSubmit={onSubmit}>
       {socialError && <p className="form-error" role="alert">{socialError}</p>}
        <label className="auth-field">ইমেইল<input className="auth-input" name="email" type="email" placeholder="you@example.com" autoComplete="email" required /></label>
-      <label className="auth-field">পাসওয়ার্ড<input className="auth-input" name="password" type="password" placeholder="কমপক্ষে ৮ অক্ষর" autoComplete="current-password" required /></label>
+       <label className="auth-field">পাসওয়ার্ড<input className="auth-input" name="password" type="password" placeholder="কমপক্ষে ৮ অক্ষর" autoComplete="current-password" required /></label>
       <button className="btn-brand w-full auth-submit" type="submit" disabled={busy}>{busy ? "অপেক্ষা করুন…" : "সাইন ইন"}</button>
       <div className="auth-divider">  <span>অথবা</span></div>
       <AuthProviderButtons onGoogle={() => social("google")} onGitHub={() => social("github")} />
