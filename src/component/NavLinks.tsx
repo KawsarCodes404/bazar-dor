@@ -1,30 +1,18 @@
-import Link from "next/link";
+import { Suspense } from "react";
+import CategoryNav from "./CategoryNav";
+import { getCategories, type Category } from "@/lib/bazardor-api";
 
-interface Inavs {
-    id: string | null,
-    slug: string,
-    nameBn: string,
-    icon: string
+export default async function NavLinks() {
+  let categories: Category[] = [];
+  try {
+    categories = await getCategories();
+  } catch (error) {
+    console.error("Could not load category navigation:", error);
+  }
+
+  return (
+    <Suspense fallback={<div className="category-nav category-nav-loading" aria-hidden="true" />}>
+      <CategoryNav categories={categories} />
+    </Suspense>
+  );
 }
-
-const NavLinks = async () => {
-
-    const res = await fetch('https://api.abcz.workers.dev/api/bazardor/categories');
-
-    const navs: Inavs[] = await res.json();
-
-    // console.log(navs)
-
-    return (
-        <div className="flex gap-5 mt-3 border border-b-gray-200 border-t-gray-100 pt-4 pb-4 pl-6">
-            {
-                navs.map(n => <Link
-                    href={`/category/${n.slug}`}
-                    key={n.id}
-                ><span>{n.icon}</span>{n.nameBn}</Link>)
-            }
-        </div>
-    );
-};
-
-export default NavLinks;

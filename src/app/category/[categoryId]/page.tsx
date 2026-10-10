@@ -1,84 +1,34 @@
-import Link from "next/link";
+import { notFound } from "next/navigation";
+import CategoryProducts from "@/component/CategoryProducts";
+import { getCategories, getProductsByCategory, type Category } from "@/lib/bazardor-api";
 
-interface IHeadlines {
-    id: string;
-    image: string;
-    nameBn: string;
-    today: string;
-    change: { pct: string, dir: string };
-    unit: string;
-    categoryNameBn: string;
-}
+export default async function CategoryPage({ params }: { params: Promise<{ categoryId: string }> }) {
+  const { categoryId } = await params;
+  const products = await getProductsByCategory(categoryId);
+  if (products.length === 0) notFound();
 
-const CategoryInfo = async ({ params }: { params: { categoryId: string } }) => {
-    const { categoryId } = await params;
+  let categories: Category[] = [];
+  try {
+    categories = await getCategories();
+  } catch (error) {
+    console.error("Could not load category labels:", error);
+  }
+  const category = categories.find((item) => item.slug === categoryId);
+  const title = category?.nameBn ?? products[0]?.categoryNameBn ?? categoryId;
+  const icon = category?.icon ?? products[0]?.categoryIcon ?? products[0]?.image ?? "🛒";
 
-    const res = await fetch(`https://api.abcz.workers.dev/api/bazardor/products?category=${categoryId}`)
-
-    const products: IHeadlines[] = await res.json();
-
-    // console.log(products)
-
-    return (
-        <div className="mx-auto w-full max-w-7xl mt-5">
-            <p>{products[0].image}</p>
-            <h1>{products[0].categoryNameBn}</h1>
-            <h1>{products.length} টি পণ্যের আজকের দাম ও পরিবর্তন</h1>
-
-            {/* sorting bar wiil be here */}
-            <div>
-
-            </div>
-
-
-            <div className="grid grid-cols-3 gap-5">
-                {
-                    products.map(i => <Link
-                        key={i.id}
-                        href={`/infos/${i.id}`}
-                    >
-                        <div
-                            key={i.id}
-                            className="flex justify-between space-y-6 border"
-                        >
-                            <div>
-                                <span>{i.image}</span>
-                                <h1>{i.nameBn}</h1>
-                                <p>প্রতি {i.unit}</p>
-                            </div>
-
-                            <div>
-                                <p>আজকের দাম</p>
-                                <h1>
-                                    {i.today} টাকা
-                                </h1>
-                            </div>
-
-                            <div>
-
-                                <div>
-                                    {i.change.dir === "up" ? (
-                                        <div>
-                                            ▲ {i.change.pct}%
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            {Number(i.change.pct) === 0 ? (
-                                                <span>— ০.০%</span>
-                                            ) : (
-                                                <span>▼ {Math.abs(Number(i.change.pct))}%</span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                            </div>
-                        </div>
-                    </Link>)
-                }
-            </div>
+  return (
+    <section className="page-section" aria-labelledby="category-title">
+      <div className="detail-card category-header-card">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="product-card-image category-hero-icon" aria-hidden="true">{icon}</span>
+          <div>
+            <h1 id="category-title" className="section-heading category-heading">{title}</h1>
+            <p className="section-subtitle">{new Intl.NumberFormat("bn-BD").format(products.length)}টি পণ্যের আজকের দাম ও পরিবর্তন</p>
+          </div>
         </div>
-    );
-};
-
-export default CategoryInfo;
+      </div>
+      <CategoryProducts products={products} />
+    </section>
+  );
+}

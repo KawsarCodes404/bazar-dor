@@ -1,50 +1,36 @@
 import Image from "next/image";
-import NavLinks from "./NavLinks";
 import Link from "next/link";
+import { Suspense } from "react";
+import CategoryNav from "./CategoryNav";
+import DateLabel from "./DateLabel";
+import UserInfo from "./UserInfo";
+import { getCategories, type Category } from "@/lib/bazardor-api";
 
-const Header = () => {
-
-  const date = new Date().toLocaleDateString("bn-BD", {
-    dateStyle: "full"
-  })
+export default async function Header() {
+  let categories: Category[] = [];
+  try {
+    categories = await getCategories();
+  } catch (error) {
+    console.error("Could not load category navigation:", error);
+  }
 
   return (
-    <header>
-      <div className="max-w-7xl mx-auto w-full">
-        <div className="flex justify-between">
-          {/* Left Logo and Date Part */}
-          <Link href={'/'}>
-            <div className="flex gap-2">
-              <Image className="w-10 h-10" height={10} width={10} src={'/logo-icon.png'} alt=""></Image>
-
-              <div>
-                <h2>বাজার দর</h2>
-                <p>{date}</p>
-              </div>
-            </div>
+    <header className="site-header">
+      <div className="site-header-inner">
+        <div className="header-top-row">
+          <Link href="/" className="brand-lockup" aria-label="বাজার দর হোম">
+            <Image src="/logo-icon.png" alt="" width={40} height={40} className="brand-logo" priority />
+            <span className="brand-copy">
+              <strong>বাজার দর</strong>
+              <small><DateLabel /></small>
+            </span>
           </Link>
-
-
-          {/* right sign in and sign up button */}
-          <div className="flex gap-1">
-            <button
-              className="btn"
-            >
-              সাইন ইন
-            </button>
-
-            <button
-              className="btn btn-error"
-            >
-              সাইন আপ
-            </button>
-          </div>
+          <UserInfo />
         </div>
-
-        <NavLinks />
+        <Suspense fallback={<div className="category-nav category-nav-loading" aria-hidden="true" />}>
+          <CategoryNav categories={categories} />
+        </Suspense>
       </div>
     </header>
   );
-};
-
-export default Header;
+}

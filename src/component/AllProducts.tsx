@@ -1,78 +1,27 @@
-import Link from "next/link";
+import ProductCard from "./ProductCard";
+import { getProducts, type Product } from "@/lib/bazardor-api";
 
-interface IHeadlines {
-    id: string;
-    image: string;
-    nameBn: string;
-    today: string;
-    change: { pct: string, dir: string };
-    unit: string;
+export default async function AllProducts() {
+  let products: Product[] = [];
+  let unavailable = false;
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Could not load all products:", error);
+    unavailable = true;
+  }
+
+  return (
+    <section className="page-section" id="সব-পণ্য" aria-labelledby="all-products-title">
+      <h2 id="all-products-title" className="section-heading">সব পণ্য</h2>
+      <p className="section-subtitle">মোট {new Intl.NumberFormat("bn-BD").format(products.length)}টি পণ্যের আজকের দাম</p>
+      {unavailable ? (
+        <p className="empty-state mt-4">এই মুহূর্তে পণ্যের তথ্য পাওয়া যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
+      ) : products.length > 0 ? (
+        <div className="product-grid mt-4">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div>
+      ) : (
+        <p className="empty-state mt-4">এখনো কোনো পণ্যের তথ্য যোগ করা হয়নি।</p>
+      )}
+    </section>
+  );
 }
-
-const AllProducts = async () => {
-
-    const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products");
-
-    const allProducts: IHeadlines[] = await res.json();;
-
-    // console.log(increasedTopProducts)
-
-    return (
-        <div className="mx-auto w-full max-w-7xl mt-5">
-
-            <h1 className="text-5xl font-bold">
-                সব পণ্য
-            </h1>
-            <p>মোট ৩৩টি পণ্য দেখানো হচ্ছে</p>
-
-            <div className="grid grid-cols-3 gap-3">
-                {
-                    allProducts.map(i => <Link
-                        key={i.id}
-                        href={`/infos/${i.id}`}
-                    >
-                        <div
-                            key={i.id}
-                            className="flex justify-between space-y-6 border"
-                        >
-                            <div>
-                                <span>{i.image}</span>
-                                <h1>{i.nameBn}</h1>
-                                <p>প্রতি {i.unit}</p>
-                            </div>
-
-                            <div>
-                                <p>আজকের দাম</p>
-                                <h1>
-                                    {i.today} টাকা
-                                </h1>
-                            </div>
-
-                            <div>
-
-                                <div>
-                                    {i.change.dir === "up" ? (
-                                        <div>
-                                            ▲ {i.change.pct}%
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            {Number(i.change.pct) === 0 ? (
-                                                <span>— ০.০%</span>
-                                            ) : (
-                                                <span>▼ {Math.abs(Number(i.change.pct))}%</span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                            </div>
-                        </div>
-                    </Link>)
-                }
-            </div>
-        </div>
-    );
-};
-
-export default AllProducts;

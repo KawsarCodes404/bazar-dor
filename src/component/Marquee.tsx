@@ -1,40 +1,35 @@
-import MarqueeText from "react-marquee-text"
-import "react-marquee-text/dist/styles.css"
+import { getProducts, type Product } from "@/lib/bazardor-api";
+import { formatBanglaNumber } from "@/lib/format";
 
-interface IHeadlines {
-    id: string,
-    image: string,
-    nameBn: string,
-    today: string,
-    change: {pct: string, dir: string}
+export default async function Marquee() {
+  let products: Product[] = [];
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Could not load price ticker:", error);
+  }
+
+  if (products.length === 0) {
+    return <div className="price-ticker price-ticker-empty">আজকের বাজারদর লোড করা যাচ্ছে না</div>;
+  }
+
+  const items = products.map((product) => (
+    <span key={product.id} className="ticker-item">
+      <span aria-hidden="true">{product.image}</span>
+      <span>{product.nameBn}</span>
+      <span>{formatBanglaNumber(product.today, 0)} টাকা/{product.unit}</span>
+      <span className={product.change.dir === "down" ? "text-down" : "text-up"}>
+        {product.change.dir === "down" ? "▼" : "▲"} {formatBanglaNumber(product.change.pct)}%
+      </span>
+    </span>
+  ));
+
+  return (
+    <div className="price-ticker" aria-label="আজকের পণ্যের দাম">
+      <div className="ticker-track">
+        <div className="ticker-group">{items}</div>
+        <div className="ticker-group" aria-hidden="true">{items}</div>
+      </div>
+    </div>
+  );
 }
-
-const Marquee = async () => {
-    const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products");
-
-    const headlines: IHeadlines[] = await res.json();
-
-    // console.log(headlines)
-
-    return (
-        <div className="border border-b-gray-200 border-t-gray-100 pt-2 pb-2">
-            <MarqueeText direction="right" duration={10}>
-                {
-                    headlines.map(h => <span
-                        key={h.id}
-                        className="mx-5"
-                    >
-                        <span>{h.image} </span>
-                        <span>{h.nameBn} </span>
-                        <span>{h.today} </span>
-                        <span>টাকা/কেজি</span>
-                        <span>{h.change.dir === "up" ? " ▲" : " ▼"} </span>
-                        <span>{h.change.pct} % </span>
-                    </span>)
-                }
-            </MarqueeText>
-        </div>
-    );
-};
-
-export default Marquee;

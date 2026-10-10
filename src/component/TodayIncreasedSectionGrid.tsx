@@ -1,62 +1,27 @@
-import Link from "next/link";
+import ProductCard from "./ProductCard";
+import { getProducts, type Product } from "@/lib/bazardor-api";
+import { numericValue } from "@/lib/format";
 
-interface IHeadlines {
-    id: string;
-    image: string;
-    nameBn: string;
-    today: string;
-    change: { pct: string, dir: string };
-    unit: string;
+export default async function TodayIncreasedSectionGrid() {
+  let products: Product[] = [];
+  let unavailable = false;
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Could not load rising products:", error);
+    unavailable = true;
+  }
+  const rising = products
+    .filter((product) => product.change.dir === "up" || numericValue(product.change.pct) > 0)
+    .sort((a, b) => numericValue(b.change.pct) - numericValue(a.change.pct))
+    .slice(0, 6);
+
+  return (
+    <section className="page-section" aria-labelledby="rising-title">
+      <h2 id="rising-title" className="section-heading"><span className="text-up">▲</span> আজ দাম বেড়েছে</h2>
+      {unavailable ? <p className="empty-state mt-4">দামের তথ্য সাময়িকভাবে পাওয়া যাচ্ছে না।</p> : rising.length > 0 ? (
+        <div className="product-grid mt-4">{rising.map((product) => <ProductCard key={product.id} product={product} />)}</div>
+      ) : <p className="section-subtitle">আজ কোনো পণ্যের দাম বাড়েনি।</p>}
+    </section>
+  );
 }
-
-const TodayIncreasedSectionGrid = async () => {
-
-    const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products");
-
-    const data: IHeadlines[] = await res.json();
-
-    const increasedTopProducts = data.filter(p => p.change.dir === "up").sort((a, b) => Number(b.change.pct) - Number(a.change.pct)).slice(0, 6);
-
-    // console.log(increasedTopProducts)
-
-    return (
-        <div className="mx-auto w-full max-w-7xl mt-5">
-            <p className="text-5xl font-bold">
-                ▲ আজ দাম বেড়েছে
-            </p>
-
-            <div className="grid grid-cols-3 gap-3">
-                {
-                    increasedTopProducts.map(i => <Link
-                        key={i.id}
-                        href={`/infos/${i.id}`}
-                    >
-                        <div
-                            key={i.id}
-                            className="flex justify-between space-y-6 border"
-                        >
-                            <div>
-                                <span>{i.image}</span>
-                                <h1>{i.nameBn}</h1>
-                                <p>প্রতি {i.unit}</p>
-                            </div>
-
-                            <div>
-                                <p>আজকের দাম</p>
-                                <h1>
-                                    {i.today} টাকা
-                                </h1>
-                            </div>
-
-                            <div>
-                                <span>▲ {i.change.pct} % </span>
-                            </div>
-                        </div>
-                    </Link>)
-                }
-            </div>
-        </div>
-    );
-};
-
-export default TodayIncreasedSectionGrid;
