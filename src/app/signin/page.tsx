@@ -44,7 +44,7 @@ function SignInForm() {
     <div className="auth-heading">   <h1>সাইন ইন</h1><p>বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে ঢুকুন।</p></div>
     <form className="auth-card" onSubmit={onSubmit}>
       {socialError && <p className="form-error" role="alert">{socialError}</p>}
-      <label className="auth-field">ইমেইল<input className="auth-input" name="email" type="email" placeholder="you@example.com" autoComplete="email" required /></label>
+       <label className="auth-field">ইমেইল<input className="auth-input" name="email" type="email" placeholder="you@example.com" autoComplete="email" required /></label>
       <label className="auth-field">পাসওয়ার্ড<input className="auth-input" name="password" type="password" placeholder="কমপক্ষে ৮ অক্ষর" autoComplete="current-password" required /></label>
       <button className="btn-brand w-full auth-submit" type="submit" disabled={busy}>{busy ? "অপেক্ষা করুন…" : "সাইন ইন"}</button>
       <div className="auth-divider">  <span>অথবা</span></div>
