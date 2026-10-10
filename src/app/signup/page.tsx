@@ -39,7 +39,7 @@ export default function SignUpPage() {
       <label className="auth-field">ইমেইল<input className="auth-input" name="email" type="email" placeholder="you@example.com" autoComplete="email" required /></label>
       <label className="auth-field">পাসওয়ার্ড<input className="auth-input" name="password" type="password" placeholder="কমপক্ষে ৮ অক্ষর" autoComplete="new-password" minLength={8} required /></label>
       <label className="auth-field">পাসওয়ার্ড নিশ্চিত করুন<input className="auth-input" name="confirmPassword" type="password" placeholder="আবার লিখুন" autoComplete="new-password" required /></label>
-      <button className="btn-brand w-full" type="submit" disabled={busy}>{busy ? "অপেক্ষা করুন…" : "অ্যাকাউন্ট তৈরি করুন"}</button>
+      <button className="btn-brand w-full auth-submit" type="submit" disabled={busy}>{busy ? "অপেক্ষা করুন…" : "অ্যাকাউন্ট তৈরি করুন"}</button>
       <div className="auth-divider"><span>অথবা</span></div>
       <AuthProviderButtons onGoogle={() => social("google")} onGitHub={() => social("github")} />
       <p className="auth-switch">অ্যাকাউন্ট আছে? <Link href="/signin">সাইন ইন করুন</Link></p>

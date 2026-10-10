@@ -41,7 +41,7 @@ function SignInForm() {
   }
 
   return <section className="auth-area">
-    <div className="auth-heading"><h1>সাইন ইন</h1><p>বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে ঢুকুন।</p></div>
+    <div className="auth-heading">   <h1>সাইন ইন</h1><p>বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে ঢুকুন।</p></div>
     <form className="auth-card" onSubmit={onSubmit}>
       {socialError && <p className="form-error" role="alert">{socialError}</p>}
       <label className="auth-field">ইমেইল<input className="auth-input" name="email" type="email" placeholder="you@example.com" autoComplete="email" required /></label>
