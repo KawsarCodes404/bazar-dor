@@ -44,9 +44,3 @@ npm run lint     # Run ESLint
 npm run build    # Build for deployment
 npm run start    # Serve the production build
 ```
-
-## Project links
-
-- Assignment and design requirements: [B14-A7-Bazar-Dor](https://github.com/ProgrammingHero1/B14-A7-Bazar-Dor)
-- Live demo: _Add deployment URL before submission._
-- Repository: _Add repository URL before submission._
